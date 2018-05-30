@@ -5,6 +5,7 @@
   "dependencies": {
     "express": "^4.16.3",
     "kurento-client": "^6.6.0",
+    "kurento-utils": "^6.7.0",
     "minimist": "^1.2.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
@@ -16,7 +17,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "golive": "npm run build && npm run server",
+    "server-dev": "npm run server -- --ws_uri=ws://testmedia.flowapp.com:8888/kurento",
+    "postinstall": "cd public && bower install"
   },
   "devDependencies": {
     "bower": "^1.8.4"

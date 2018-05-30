@@ -8,10 +8,9 @@ import './App.css';
 
 // KURENTO TEST PROTOTYPE
 
-const TEST_FROM_REACT = true;
+const TEST_FROM_REACT = false;
 
 const WEB_IMG = require('./img/webrtc.png');
-// const SPINNER = require('./img/spinner.gif');
 
 const ws = new WebSocket(TEST_FROM_REACT ? 'wss://localhost:8443/one2many' : 'wss://' + window.location.host + '/one2many');
 
@@ -28,6 +27,7 @@ class App extends Component {
 
   componentDidMount () {
     this.video = ReactDOM.findDOMNode(this.refs.videoTag);
+    // this.video = document.querySelector('#video');
 
     this.addSocketListeners(ws);
   }
@@ -39,15 +39,11 @@ class App extends Component {
   addSocketListeners () {
     ws.onmessage = (message) => {
     	let parsedMessage = JSON.parse(message.data);
-    	// console.info('Received message: ' + message.data);
+      console.log('Get message', parsedMessage);
 
     	switch (parsedMessage.id) {
         case 'message':
-          if (parsedMessage.message === 'newPresenter') {
-            this.setState({ disabledPresenter: true });
-          } else if (parsedMessage.message === 'noMorePresenter') {
-            this.setState({ disabledPresenter: false });
-          }
+          this.messageResponse(parsedMessage.message);
           break;
       	case 'presenterResponse':
       		this.presenterResponse(parsedMessage);
@@ -66,6 +62,13 @@ class App extends Component {
     	}
     }
   }
+  messageResponse = (message) => {
+    if (message === 'newPresenter') {
+      this.setState({ disabledPresenter: true });
+    } else if (message === 'noMorePresenter') {
+      this.setState({ disabledPresenter: false });
+    }
+  }
 
   presenterResponse = (message) => {
     if (message.response !== 'accepted') {
@@ -73,6 +76,7 @@ class App extends Component {
   		console.log('Call rejected: ' + errorMsg);
   		this.dispose();
   	} else {
+      console.log('webRtcPeer', this.webRtcPeer, message);
   		this.webRtcPeer.processAnswer(message.sdpAnswer);
   	}
   }
@@ -84,9 +88,9 @@ class App extends Component {
       window.alert(errorMsg);
   		this.dispose();
   	} else {
+      console.log('webRtcPeer', this.webRtcPeer, message);
   		this.webRtcPeer.processAnswer(message.sdpAnswer);
   	}
-    this.setState({ loading: false });
   }
 
   generatePresenter = () => {
@@ -129,6 +133,16 @@ class App extends Component {
     }
 
     this.sendMessage(message);
+  }
+
+  onIceCandidate = (candidate) => {
+  	   console.log('Local candidate' + JSON.stringify(candidate));
+
+  	   var message = {
+  	      id : 'onIceCandidate',
+  	      candidate : candidate
+  	   }
+  	   this.sendMessage(message);
   }
 
   generateViewer = () => {
@@ -187,7 +201,6 @@ class App extends Component {
   }
 
   render () {
-
     return (
       <div className="App">
         <header className="App-header">
@@ -203,6 +216,11 @@ class App extends Component {
             <button disabled={this.state.disabledPresenter} onClick={this.onPresenterClick}>Connect as Presenter</button>
             <button onClick={this.onViewerClick}>Connect as Attendee</button>
             <button onClick={this.stop}>Stop</button>
+          </nav>
+          <nav>
+            <button id='call'>Present</button>
+            <button id='viewer'>View</button>
+            <button id='terminate'>Close</button>
           </nav>
 
           <video ref='videoTag' id="video" autoPlay poster={WEB_IMG} width="640px" height="480px"></video>
