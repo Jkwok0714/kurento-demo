@@ -1,0 +1,21 @@
+{
+  "name": "kurento-demo",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "express": "^4.16.3",
+    "kurento-client": "^6.6.0",
+    "minimist": "^1.2.0",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-scripts": "1.1.4",
+    "ws": "^5.2.0"
+  },
+  "scripts": {
+    "start": "PORT=3004 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "server": "node server/index.js"
+  }
+}
