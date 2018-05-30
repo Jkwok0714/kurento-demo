@@ -25,6 +25,7 @@ var fs    = require('fs');
 var https = require('https');
 
 let config = require('./config.js');
+let constant = require('./constant.js');
 const DEFAULT_HOST =  config.KURENTO_HOST || 'ws://localhost:8888/kurento';
 
 var argv = minimist(process.argv.slice(2), {
@@ -52,6 +53,8 @@ var presenter = null;
 var viewers = [];
 var noPresenterMessage = 'No active presenter. Try again later...';
 
+let wsConnections = {};
+
 /*
  * Server startup
  */
@@ -72,13 +75,30 @@ function nextUniqueId() {
 	return idCounter.toString();
 }
 
+const notifyAllConnections = (message) => {
+  for (let sessionId in wsConnections) {
+    wsConnections[sessionId].send(JSON.stringify({
+      id: 'message',
+      message: message
+    }));
+  }
+}
+
 /*
  * Management of WebSocket messages
  */
 wss.on('connection', function(ws) {
-
 	var sessionId = nextUniqueId();
 	console.log('Connection received with sessionId ' + sessionId);
+
+  wsConnections[sessionId] = ws;
+
+  if (presenter !== null) {
+    ws.send(JSON.stringify({
+      id: 'message',
+      message: constant.PRESENTER_JOINED
+    }))
+  }
 
     ws.on('error', function(error) {
         console.log('Connection ' + sessionId + ' error');
@@ -109,6 +129,8 @@ wss.on('connection', function(ws) {
 					response : 'accepted',
 					sdpAnswer : sdpAnswer
 				}));
+
+        notifyAllConnections(constant.PRESENTER_JOINED);
 			});
 			break;
 
@@ -191,7 +213,7 @@ function startPresenter(sessionId, ws, sdpOffer, callback) {
 			return callback(error);
 		}
 
-		if (presenter === null) {
+		if (presenter === null || !kurentoClient) {
 			stop(sessionId);
 			return callback(noPresenterMessage);
 		}
@@ -279,7 +301,7 @@ function startViewer(sessionId, ws, sdpOffer, callback) {
 			"ws" : ws
 		}
 
-		if (presenter === null) {
+		if (presenter === null || !kurentoClient) {
 			stop(sessionId);
 			return callback(noPresenterMessage);
 		}
@@ -351,6 +373,10 @@ function stop(sessionId) {
 		presenter = null;
 		viewers = [];
 
+    notifyAllConnections(constant.PRESENTER_LEFT)
+
+    delete wsConnections[sessionId];
+
 	} else if (viewers[sessionId]) {
 		viewers[sessionId].webRtcEndpoint.release();
 		delete viewers[sessionId];
@@ -358,7 +384,7 @@ function stop(sessionId) {
 
 	clearCandidatesQueue(sessionId);
 
-	if (viewers.length < 1 && !presenter) {
+	if (viewers.length < 1 && !presenter && kurentoClient) {
         console.log('Closing kurento client');
         kurentoClient.close();
         kurentoClient = null;

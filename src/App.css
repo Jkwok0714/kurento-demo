@@ -28,3 +28,12 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+video {
+  margin-top: 20px;
+  background-color: gray;
+
+  -webkit-box-shadow: 2px 1px 14px 1px rgba(0,0,0,0.22);
+  -moz-box-shadow: 2px 1px 14px 1px rgba(0,0,0,0.22);
+  box-shadow: 2px 1px 14px 1px rgba(0,0,0,0.22);
+}
