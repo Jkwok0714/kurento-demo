@@ -58,7 +58,7 @@ var noPresenterMessage = 'No active presenter. Try again later...';
 var asUrl = url.parse(argv.as_uri);
 var port = asUrl.port;
 var server = https.createServer(options, app).listen(port, function() {
-    console.log('Kurento Tutorial started');
+    console.log('Kurento (adapted) Example started');
     console.log('Open ' + url.format(asUrl) + ' with a WebRTC capable browser');
 });
 
@@ -154,6 +154,7 @@ wss.on('connection', function(ws) {
 
 // Recover kurentoClient for the first time.
 function getKurentoClient(callback) {
+    console.log('Retrieving Kurento Client');
     if (kurentoClient !== null) {
         return callback(null, kurentoClient);
     }
@@ -164,7 +165,7 @@ function getKurentoClient(callback) {
             return callback("Could not find media server at address" + argv.ws_uri
                     + ". Exiting with error " + error);
         }
-
+        console.log('Insert Kurento');
         kurentoClient = _kurentoClient;
         callback(null, kurentoClient);
     });
