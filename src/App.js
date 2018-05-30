@@ -8,7 +8,9 @@ import './App.css';
 
 // KURENTO TEST PROTOTYPE
 
-const ws = new WebSocket('wss://' + window.location.host + '/one2many');
+const TEST_FROM_REACT = true;
+
+const ws = new WebSocket(TEST_FROM_REACT ? 'wss://localhost:8443/one2many' : 'wss://' + window.location.host + '/one2many');
 
 const kurentoUtils = window.kurentoUtils;
 
@@ -17,8 +19,6 @@ class App extends Component {
   video = null;
 
   componentDidMount () {
-    // Add listeners to web socket
-
     this.video = ReactDOM.findDOMNode(this.refs.videoTag);
 
     this.addSocketListeners(ws);
