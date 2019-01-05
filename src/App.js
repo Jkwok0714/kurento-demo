@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom';
 import logo from './logo.svg';
 import './App.css';
 
-// const adapter = require("./bower_components/adapter.js/adapter");
-// const kurentoUtils = require("./bower_components/kurento-utils/js/kurento-utils");
-
 // KURENTO TEST PROTOTYPE
 
 const TEST_FROM_REACT = false;
@@ -217,11 +214,11 @@ class App extends Component {
             <button onClick={this.onViewerClick}>Connect as Attendee</button>
             <button onClick={this.stop}>Stop</button>
           </nav>
-          <nav>
+          {/* <nav>
             <button id='call'>Present</button>
             <button id='viewer'>View</button>
             <button id='terminate'>Close</button>
-          </nav>
+          </nav> */}
 
           <video ref='videoTag' id="video" autoPlay poster={WEB_IMG} width="640px" height="480px"></video>
         </div>
