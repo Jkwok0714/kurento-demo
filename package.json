@@ -23,6 +23,6 @@
     "postinstall": "cd public && bower install"
   },
   "devDependencies": {
-    "bower": "^1.8.4"
+    "bower": "^1.8.8"
   }
 }
