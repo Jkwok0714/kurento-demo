@@ -10,7 +10,7 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-scripts": "^3.1.1",
-    "ws": "^5.2.0"
+    "ws": "^7.4.6"
   },
   "scripts": {
     "start": "PORT=3004 react-scripts start",
